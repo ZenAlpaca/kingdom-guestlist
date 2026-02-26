@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guest List Submission</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --dark: #0e0e10;
+    --surface: #18181c;
+    --surface2: #222228;
+    --border: rgba(201,168,76,0.2);
+    --text: #f0ece4;
+    --muted: #888;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(201,168,76,0.04) 0%, transparent 50%);
+  }
+
+  .card {
+    width: 100%;
+    max-width: 560px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,168,76,0.08);
+    animation: rise 0.6s ease both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, #1a1a1f 0%, #12120f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 2.5rem 2rem;
+    text-align: center;
+    position: relative;
+  }
+
+  .card-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.4);
+    padding: 4px 14px;
+    border-radius: 50px;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  h1 span { color: var(--gold); }
+
+  .subtitle {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+    font-weight: 300;
+  }
+
+  .card-body {
+    padding: 2rem 2.5rem 2.5rem;
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    margin-top: 1.75rem;
+    font-weight: 500;
+  }
+
+  .section-label:first-child { margin-top: 0; }
+
+  .row { display: flex; gap: 1rem; }
+  .row .field { flex: 1; }
+
+  .field { margin-bottom: 1.25rem; }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.03em;
+  }
+
+  input[type="text"], input[type="number"], select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+
+  select option {
+    background: #222228;
+    color: var(--text);
+  }
+
+  .tier-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .tier-option { display: none; }
+
+  .tier-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    padding: 0.7rem 0.4rem;
+    background: var(--dark);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .tier-label:hover {
+    border-color: rgba(201,168,76,0.4);
+  }
+
+  .tier-option:checked + .tier-label {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.1);
+    box-shadow: 0 0 0 1px var(--gold) inset;
+  }
+
+  .tier-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold-light);
+  }
+
+  .tier-desc {
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .section-field-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.75rem 0;
+  }
+
+  .guests-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .guest-entry {
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 1rem;
+    position: relative;
+    animation: slide-in 0.3s ease both;
+  }
+
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .guest-entry .row { margin-bottom: 0; }
+  .guest-entry .field { margin-bottom: 0.75rem; }
+  .guest-entry .field:last-child { margin-bottom: 0; }
+
+  .guest-num {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+
+  .remove-btn {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .remove-btn:hover { color: #e05; background: rgba(238,0,85,0.1); }
+
+  .add-guest-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px dashed rgba(201,168,76,0.35);
+    border-radius: 8px;
+    color: var(--gold);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    padding: 0.65rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+
+  .add-guest-btn:hover {
+    background: rgba(201,168,76,0.06);
+    border-color: var(--gold);
+  }
+
+  .submit-btn {
+    width: 100%;
+    margin-top: 2rem;
+    background: linear-gradient(135deg, var(--gold), #b8932d);
+    border: none;
+    border-radius: 10px;
+    color: #0e0e10;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    padding: 1rem;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(201,168,76,0.25);
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(201,168,76,0.35);
+  }
+
+  .submit-btn:active { transform: translateY(0); }
+
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+
+  .success-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .success-screen h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+  }
+
+  .success-screen p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .error-msg {
+    background: rgba(238,0,85,0.1);
+    border: 1px solid rgba(238,0,85,0.3);
+    border-radius: 8px;
+    color: #ff6b8a;
+    font-size: 0.82rem;
+    padding: 0.75rem 1rem;
+    margin-top: 1rem;
+    display: none;
+  }
+
+  #config-banner {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    color: var(--gold-light);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .field-hint {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 0.4rem;
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .contact-footer {
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .contact-footer p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .contact-footer a {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .contact-footer a:hover { text-decoration: underline; }
+    .card-header { padding: 2rem 1.5rem 1.5rem; }
+    .card-body { padding: 1.5rem; }
+    h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-header">
+    <div class="badge">Kingdom Nightclub</div>
+    <h1>Guest<span>list</span></h1>
+    <p class="subtitle">Fill out the form below to submit your guest list</p>
+  </div>
+
+  <div class="card-body">
+    <!-- Config notice (shown when script URL not set) -->
+    <div id="config-banner">
+      ⚙️ Set your Google Apps Script URL in the <code>&lt;script&gt;</code> at the bottom of this file.
+    </div>
+
+    <form id="guestForm">
+
+      <!-- Source / Submitted By -->
+      <p class="section-label">Submitted By</p>
+      <div class="field">
+        <label for="source">Your Name (List Source)</label>
+        <input type="text" id="source" name="source" placeholder="e.g. John Smith" required>
+        <p class="field-hint">Who is this guest being listed by? This field is required for tracking purposes.</p>
+      </div>
+
+      <div class="field">
+        <label for="perfDate">Date of Performance</label>
+        <input type="text" id="perfDate" name="perfDate" placeholder="e.g. March 15, 2026" required>
+        <p class="field-hint">The date of the event you are submitting this guest list for.</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Guests -->
+      <p class="section-label">Guest Details</p>
+      <div class="guests-list" id="guestsList">
+        <!-- Guest entries injected here -->
+      </div>
+      <button type="button" class="add-guest-btn" id="addGuestBtn">+ Add Another Guest</button>
+
+      <button type="submit" class="submit-btn" id="submitBtn">Submit Guest List</button>
+      <div class="error-msg" id="errorMsg"></div>
+    </form>
+
+    <!-- Success state -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">✦</div>
+      <h2>You're on the list.</h2>
+      <p>Your guests have been submitted successfully.<br>We'll see you there.</p>
+    </div>
+
+    <div class="contact-footer">
+      <p>For any questions, please contact<br>
+      <strong style="color:#e0d6c4;">Ava Philmon</strong> · Kingdom GM<br>
+      <a href="tel:5124307194">512-430-7194</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // =============================================
+  //  CONFIGURATION — paste your Apps Script URL here
+  // =============================================
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwWFj8MI0aqwFO3jlTtyJErT8o7FVmDT940HWx8lD3LQW2yevHAJoMBjYCmcIVsy3ATLQ/exec';
+  // =============================================
+
+  const configBanner = document.getElementById('config-banner');
+  if (APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
+    configBanner.style.display = 'none';
+  }
+
+  let guestCount = 0;
+
+  function addGuest() {
+    guestCount++;
+    const id = guestCount;
+    const list = document.getElementById('guestsList');
+    const entry = document.createElement('div');
+    entry.className = 'guest-entry';
+    entry.dataset.id = id;
+    entry.innerHTML = `
+      <div class="guest-num">Guest ${id}</div>
+      ${id > 1 ? `<button type="button" class="remove-btn" onclick="removeGuest(${id})">✕</button>` : ''}
+      <div class="row">
+        <div class="field">
+          <label>First Name</label>
+          <input type="text" name="firstName_${id}" placeholder="First" required>
+        </div>
+        <div class="field">
+          <label>Last Name</label>
+          <input type="text" name="lastName_${id}" placeholder="Last" required>
+        </div>
+      </div>
+      <div class="field">
+        <span class="section-field-label">Section</span>
+        <div class="tier-grid">
+          <div>
+            <input type="radio" name="section_${id}" id="sGA_${id}" value="GA" class="tier-option" required>
+            <label class="tier-label" for="sGA_${id}">
+              <span class="tier-name">GA</span>
+              <span class="tier-desc">General</span>
+            </label>
+          </div>
+          <div>
+            <input type="radio" name="section_${id}" id="sMEZZ_${id}" value="MEZZ" class="tier-option">
+            <label class="tier-label" for="sMEZZ_${id}">
+              <span class="tier-name">MEZZ</span>
+              <span class="tier-desc">Upstairs</span>
+            </label>
+          </div>
+          <div>
+            <input type="radio" name="section_${id}" id="sAA_${id}" value="AA" class="tier-option">
+            <label class="tier-label" for="sAA_${id}">
+              <span class="tier-name">AA</span>
+              <span class="tier-desc">Greenroom</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Plus 1s</label>
+        <input type="number" name="plusOnes_${id}" placeholder="0" min="0" max="10" value="0">
+      </div>
+    `;
+    list.appendChild(entry);
+  }
+
+  function removeGuest(id) {
+    const entry = document.querySelector(`.guest-entry[data-id="${id}"]`);
+    if (entry) entry.remove();
+    // Renumber displayed labels
+    document.querySelectorAll('.guest-entry').forEach((el, i) => {
+      el.querySelector('.guest-num').textContent = `Guest ${i + 1}`;
+    });
+  }
+
+  document.getElementById('addGuestBtn').addEventListener('click', addGuest);
+
+  // Init with one guest
+  addGuest();
+
+  document.getElementById('guestForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const source = document.getElementById('source').value.trim();
+    const perfDate = document.getElementById('perfDate').value.trim();
+    const guests = [];
+    let missingSection = false;
+
+    document.querySelectorAll('.guest-entry').forEach(entry => {
+      const id = entry.dataset.id;
+      const first = entry.querySelector(`[name="firstName_${id}"]`)?.value.trim();
+      const last = entry.querySelector(`[name="lastName_${id}"]`)?.value.trim();
+      const plus = entry.querySelector(`[name="plusOnes_${id}"]`)?.value || '0';
+      const sectionEl = entry.querySelector(`input[name="section_${id}"]:checked`);
+      if (!sectionEl) missingSection = true;
+      if (first && last) {
+        guests.push({ firstName: first, lastName: last, plusOnes: plus, section: sectionEl ? sectionEl.value : '' });
+      }
+    });
+
+    if (guests.length === 0) {
+      showError('Please add at least one guest with a first and last name.');
+      return;
+    }
+
+    if (missingSection) {
+      showError('Please select a section for every guest.');
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    const payload = {
+      source,
+      perfDate,
+      guests,
+      submittedAt: new Date().toISOString()
+    };
+
+    if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+      // Demo mode — just show success
+      setTimeout(showSuccess, 800);
+      return;
+    }
+
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      showSuccess();
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Submit Guest List';
+      showError('Submission failed. Please try again or contact the organizer.');
+    }
+  });
+
+  function showSuccess() {
+    document.getElementById('guestForm').style.display = 'none';
+    const s = document.getElementById('successScreen');
+    s.style.display = 'block';
+    s.style.animation = 'rise 0.5s ease both';
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 5000);
+  }
+</script>
+</body>
+</html>
