@@ -138,6 +138,21 @@
     border-color: var(--gold);
     box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
   }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.6) sepia(1) saturate(2) hue-rotate(5deg);
+    cursor: pointer;
+    opacity: 0.7;
+    margin-left: 0.5rem;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+  }
+  input[type="date"] {
+    color-scheme: dark;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
 
   .field-hint {
     font-size: 0.75rem;
@@ -415,6 +430,23 @@
     font-size: 1.6rem; color: var(--gold); margin-bottom: 0.75rem;
   }
   .success-screen p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+  .submit-another-btn {
+    margin-top: 1.5rem;
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 10px;
+    color: var(--gold);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+  .submit-another-btn:hover {
+    background: rgba(201,168,76,0.08);
+    border-color: var(--gold);
+  }
 
   /* ERRORS */
   .error-msg {
@@ -513,7 +545,7 @@
       <div class="policy-title">📋 Guest List Policy</div>
       <ul class="policy-list">
         <li>Kingdom reserves the right to make final decisions on all guest list entries.</li>
-        <li>Support DJs are allotted <strong>2 AA (Greenroom) bands</strong> — one for themselves plus one guest. Please also include media under AA. DJs must include themselves on their own list.</li>
+        <li>Support DJs are allotted <strong>2 AA (Greenroom) bands</strong> — one for themselves plus one guest. DJs must include themselves on their own list.</li>
         <li>If the Mezzanine is closed, all MEZZ entries will automatically be moved to GA.</li>
         <li>GA bands are <strong>unlimited</strong> — add as many GA guests as needed.</li>
       </ul>
@@ -526,13 +558,13 @@
       <p class="section-label">Submitted By</p>
       <div class="field">
         <label for="source">Your Name (List Source)</label>
-        <input type="text" id="source" name="source" placeholder="e.g. John Smith / DJ Dave" required>
-        <p class="field-hint" style="color:#e8c97a;font-style:normal;font-weight:500">⚠️ REQUIRED — DJs must include themselves (legal name) as a guest under AA (Greenroom).</p>
+        <input type="text" id="source" name="source" placeholder="e.g. John Smith" required>
+        <p class="field-hint" style="color:#e8c97a;font-style:normal;font-weight:500">⚠️ REQUIRED — DJs must include themselves as a guest under AA (Greenroom).</p>
       </div>
       <div class="field">
         <label for="perfDate">Date of Performance</label>
-        <input type="text" id="perfDate" name="perfDate" placeholder="e.g. 03/12/26" required>
-        <p class="field-hint">The date of the event you are submitting this guest list for.</p>
+        <input type="date" id="perfDate" name="perfDate" required>
+        <p class="field-hint">Defaults to today — tap to change if submitting for a different date.</p>
       </div>
 
       <div class="divider"></div>
@@ -609,6 +641,7 @@
       <div class="success-icon">✦</div>
       <h2>You're on the list.</h2>
       <p>Your guests have been submitted successfully.<br>We'll see you there.</p>
+      <button class="submit-another-btn" id="submitAnotherBtn">+ Submit Another Guest List</button>
     </div>
 
     <div class="contact-footer">
@@ -623,7 +656,7 @@
   // =============================================
   //  CONFIGURATION — paste your Apps Script URL
   // =============================================
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwWFj8MI0aqwFO3jlTtyJErT8o7FVmDT940HWx8lD3LQW2yevHAJoMBjYCmcIVsy3ATLQ/exec';
+  const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
   // =============================================
 
   if (APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
@@ -631,6 +664,11 @@
   }
 
   let guestCount = 0;
+
+  // Auto-fill today's date
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+  document.getElementById('perfDate').value = todayStr;
 
   function addGuest() {
     guestCount++;
@@ -819,6 +857,27 @@
     s.style.animation = 'rise 0.5s ease both';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  function resetForm() {
+    // Clear source but keep date as today
+    document.getElementById('source').value = '';
+    document.getElementById('perfDate').value = todayStr;
+    // Clear all guests and start fresh
+    document.getElementById('guestsList').innerHTML = '';
+    guestCount = 0;
+    addGuest();
+    // Reset email toggle
+    document.getElementById('emailToggle').checked = false;
+    document.getElementById('emailInputWrap').classList.remove('visible');
+    document.getElementById('emailAddr').value = '';
+    // Show form, hide others
+    document.getElementById('successScreen').style.display = 'none';
+    document.getElementById('reviewScreen').style.display  = 'none';
+    document.getElementById('guestForm').style.display     = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.getElementById('submitAnotherBtn').addEventListener('click', resetForm);
 
   function showError(elId, msg) {
     const el = document.getElementById(elId);
