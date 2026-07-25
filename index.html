@@ -1291,6 +1291,9 @@
     document.getElementById('emailInputWrap').classList.remove('visible');
     document.getElementById('emailAddr').value = '';
     setShowDate(getShowDate());
+    const btn = document.getElementById('submitBtnBottom');
+    btn.disabled = false;
+    btn.textContent = 'Confirm & Submit';
     document.getElementById('successScreen').style.display = 'none';
     document.getElementById('reviewScreen').style.display  = 'none';
     document.getElementById('guestForm').style.display     = 'none';
